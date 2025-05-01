@@ -1,0 +1,123 @@
+/* Global fix pt. scroll și layout */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    font-size: 20px;
+    padding-top: 20px;
+}
+
+/* Navbar Container */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100vw;
+    padding: 0.5rem 1rem;
+    background: #fff;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.08);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* Logo */
+.navbar-logo {
+    background: transparent;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.logo-link {
+    text-decoration: none;
+    font-weight: bold;
+    color: #4a7c2b;
+    font-size: 1rem;
+}
+
+/* Actions */
+.navbar-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: nowrap;
+}
+
+/* Global button styles */
+.navbar-actions button {
+    font-size: 0.65rem;
+    padding: 0.3rem 0.5rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 5rem;
+    height: 2rem;
+    font-weight: 600;
+}
+
+/* Button colors */
+.sign-in-button {
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+.register-button {
+    background-color: #333;
+    color: #fff;
+}
+
+.contact-button {
+    background-color: #4a7c2b;
+    color: #fff;
+}
+
+.profile-button,
+.logout-button {
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+/* Hover/active styles */
+.navbar-actions button:hover,
+.navbar-actions button:active {
+    background-color: #4a7c2b;
+    color: black;
+}
+
+.logout-button {
+    width: auto;
+    padding: 0 1rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .navbar {
+        flex-wrap: wrap;
+        padding: 0.5rem 1rem;
+    }
+
+    .navbar-actions {
+        gap: 0.5rem;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .navbar-actions button {
+        font-size: 0.6rem;
+        padding: 0.25rem 0.5rem;
+    }
+
+    .logo-link {
+        font-size: 1.25rem;
+    }
+}

@@ -1,0 +1,234 @@
+/* Font and layout */
+body {
+    margin: 0;
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    min-height: 100vh;
+    color: #222;
+}
+
+/* Navbar */
+.navbar {
+    width: 100%;
+    background-color: #4a7c2b;
+    padding: 8px 16px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 10;
+    color: white;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+/* Main container */
+.homepage-container {
+    max-width: 1000px;
+    width: 100%;
+    margin: 0 auto;
+    padding-top: 60px;
+}
+
+/* Content */
+.content-container {
+    padding: 20px 12px;
+}
+
+/* Hero Title */
+.hero-title {
+    font-size: 36px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 100px;
+    color: black;
+    letter-spacing: 0.5px;
+}
+
+/* Search */
+.search-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 30px;
+}
+
+.search-container {
+    position: relative;
+    width: 240px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 12px 40px 12px 16px;
+    border-radius: 24px;
+    border: none;
+    background-color: #f3f4f6;
+    color: #1a1a1a;
+    font-size: 14px;
+    transition: box-shadow 0.3s;
+}
+
+.search-input:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(74, 124, 43, 0.2);
+}
+
+.search-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #666;
+}
+
+/* Button */
+.courses-button {
+    background-color: #4a7c2b;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 28px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.courses-button:hover {
+    background-color: #3a6121;
+}
+
+/* Course Grid */
+.courses-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 40px;
+}
+
+/* Course Card */
+.course-card-homepage {
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 14px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.3s;
+}
+
+.course-card-homepage:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.06);
+}
+
+.course-image-homepage {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 6px;
+    margin-bottom: 12px;
+}
+
+.course-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2f5d34;
+}
+
+/* How it works section */
+.how-to-section {
+    margin-top: 40px;
+    padding: 0 8px;
+}
+
+.section-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #2f5d34;
+    margin-bottom: 18px;
+    text-align: center;
+}
+
+.section-description {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 24px;
+    line-height: 1.6;
+    max-width: 680px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+.steps-list {
+    list-style-type: decimal;
+    padding-left: 18px;
+}
+
+.step-item {
+    margin-bottom: 12px;
+    font-size: 14px;
+    color: #333;
+}
+
+.step-number {
+    font-weight: 600;
+    color: #4a7c2b;
+}
+
+.step-details {
+    list-style-type: disc;
+    padding-left: 18px;
+    margin-top: 6px;
+}
+
+.step-details li {
+    margin-bottom: 6px;
+    font-size: 13px;
+    color: #444;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .courses-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .courses-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .hero-title {
+        font-size: 22px;
+    }
+
+    .section-title {
+        font-size: 18px;
+    }
+
+    .search-section {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .search-container {
+        width: 100%;
+        max-width: 280px;
+    }
+
+    .search-input {
+        font-size: 13px;
+    }
+
+    .courses-button {
+        font-size: 13px;
+        padding: 10px 20px;
+    }
+}
