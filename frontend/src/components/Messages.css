@@ -3,23 +3,23 @@
     display: flex;
     padding: 20px;
     width: 100%;
-    margin-top: 60px; /* Acomodare pentru header */
-    position: relative; /* Asigură alinierea corectă a componentelor */
+    margin-top: 60px;
+    position: relative;
 }
 
 /* User list styling */
 .user-list {
     width: 250px;
     position: fixed;
-    top: 80px; /* Se aliniază la marginea din stânga, sub header */
+    top: 80px;
     left: 20px;
-    height: calc(100vh - 100px); /* Fără a depăși înălțimea ferestrei */
+    height: calc(100vh - 100px);
     overflow-y: auto;
     overflow-x: hidden;
     padding-right: 20px;
     border-radius: 8px;
-    background-color: #f4f4f4; /* Fond pentru a evidenția zona */
-    box-shadow: 2px 0px 8px rgba(0, 0, 0, 0.1); /* Umbră subtilă pe partea dreaptă */
+    background-color: #f4f4f4;
+    box-shadow: 2px 0px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* List item styling */
@@ -40,25 +40,25 @@
 }
 
 .user-list li:hover {
-    background-color: #4CAF50; /* Culoare de fundal când treci cu mouse-ul */
+    background-color: #4CAF50;
     color: #fff;
 }
 
 .user-list li.selected {
-    background-color: #4CAF50; /* Culoare pentru utilizatorii selectați */
+    background-color: #4CAF50;
     color: white;
 }
 
 /* General container for the messages */
 .central-content {
-    margin-left: 100px; /* Spațiu pentru lista de utilizatori fixată */
+    margin-left: 100px;
 
-    margin-right: 200px; /* Spațiu pentru lista de utilizatori fixată */
+    margin-right: 200px;
     padding: 20px;
-    width: calc(100% - 300px); /* Ajustare lățime */
+    width: calc(100% - 300px);
     background: #fff;
     border-radius: 8px;
-    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1); /* Umbra subtilă */
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -67,10 +67,10 @@
 /* Styling for the message list */
 .messages-list {
     flex-grow: 1;
-    overflow-y: auto; /* Permite derularea mesajelor */
-    padding-right: 10px; /* Un mic spațiu pentru a evita suprapunerea textului cu scroll-ul */
-    max-height: 300px; /* Limitează înălțimea mesajelor și permite scroll-ul */
-    margin-bottom: 20px; /* Spațiu sub lista de mesaje */
+    overflow-y: auto;
+    padding-right: 10px;
+    max-height: 300px;
+    margin-bottom: 20px;
 }
 
 /* Styling for individual messages */
@@ -78,45 +78,45 @@
     margin-bottom: 15px;
     padding: 5px;
     border-radius: 10px;
-    max-width: 60%; /* Mesajele nu vor ocupa toată lățimea */
+    max-width: 60%;
     line-height: 1;
     font-size: 1rem;
     display: flex;
     flex-direction: column;
-    word-wrap: break-word; /* Evită depășirea textului */
+    word-wrap: break-word;
     position: relative;
 }
 
 /* Message sent by the user (my-message) */
 .my-message {
     margin-left: 160px;
-    background-color: #4CAF50; /* Culoare pentru mesajele trimise de utilizator */
+    background-color: #4CAF50;
     color: white;
-    align-self: flex-end; /* Aliniere la dreapta */
-    border-top-right-radius: 0px; /* Colțurile mai rotunjite la dreapta */
+    align-self: flex-end;
+    border-top-right-radius: 0px;
     border-top-left-radius: 15px;
 }
 
 /* Message sent by the other user (user-message) */
 .user-message {
-    background-color: #f1f1f1; /* Culoare pentru mesajele altui utilizator */
+    background-color: #f1f1f1;
     color: #333;
-    align-self: flex-start; /* Aliniere la stânga */
-    border-top-left-radius: 0px; /* Colțuri mai rotunjite la stânga */
+    align-self: flex-start;
+    border-top-left-radius: 0px;
     border-top-right-radius: 15px;
 }
 
 /* Styling for the textarea (writing area) */
 textarea {
     width: 90%;
-    height: 30px; /* Dimensiune mai mică pentru caseta de scris */
+    height: 30px;
     padding: 12px;
     font-size: 1.1rem;
     border-radius: 8px;
     border: 1px solid #ccc;
     margin-top: 15px;
     transition: border-color 0.3s;
-    resize: none; /* Dezactivează redimensionarea */
+    resize: none;
 }
 
 /* When textarea is focused */
@@ -199,7 +199,7 @@ textarea:focus {
     width: 30px;
     height: 30px;
     border-radius: 30%;
-    background-color: #00ff00; /* Verde pentru beculețul aprins */
+    background-color: #00ff00;
     animation: blink 1s infinite;
     margin-right: 15px;
 }

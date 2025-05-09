@@ -17,13 +17,13 @@ body {
 
 .contact-content {
     width: 100%;
-    padding: 1.5rem 2rem; /* smaller padding */
+    padding: 1.5rem 2rem;
     display: flex;
     flex-direction: column;
 }
 
 .contact-content h1 {
-    font-size: 2rem; /* was 5rem */
+    font-size: 2rem;
     margin-bottom: 1rem;
     padding-left: 1.5rem;
     font-weight: 500;
@@ -38,7 +38,7 @@ body {
 }
 
 .contact-content p {
-    font-size: 1rem; /* was 2rem */
+    font-size: 1rem;
     margin-bottom: 0.5rem;
     padding-left: 2rem;
 }
