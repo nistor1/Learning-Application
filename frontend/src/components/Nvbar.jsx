@@ -7,6 +7,11 @@ const Navbar = () => {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
 
+    const handleLogout = async () => {
+        await logout();
+        navigate('/login');
+    };
+
     return (
         <nav className="navbar">
             <button className="navbar-logo" onClick={() => navigate('/homepage')}>
@@ -14,8 +19,7 @@ const Navbar = () => {
             </button>
 
             <div className="navbar-actions">
-                {!user ? (
-                    // Logged out view (Image 1)
+                {!user || !user.logged ? (
                     <>
                         <button className="sign-in-button" onClick={() => navigate('/login')}>
                             Sign in
@@ -28,7 +32,6 @@ const Navbar = () => {
                         </button>
                     </>
                 ) : (
-                    // Logged in view (Image 2)
                     <>
                         <button className="profile-button" onClick={() => navigate('/profile')}>
                             My profile
@@ -36,7 +39,7 @@ const Navbar = () => {
                         <button className="contact-button" onClick={() => navigate('/contact')}>
                             Contact
                         </button>
-                        <button className="logout-button" onClick={logout}>
+                        <button className="logout-button" onClick={handleLogout}>
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="24"

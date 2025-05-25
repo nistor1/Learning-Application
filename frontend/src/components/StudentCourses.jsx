@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { Search, Edit2, Calendar, ChevronDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
@@ -11,50 +12,30 @@ export default function StudentCourses() {
   const [showFieldDropdown, setShowFieldDropdown] = useState(false);
   const [selectedField, setSelectedField] = useState("Field of Interest");
   const [searchTerm, setSearchTerm] = useState('');
+  const [courses, setCourses] = useState([]);
 
   const navigate = useNavigate();
 
-  const fields = [
-    "All Fields", "JAVA", "JAVA Spring", "JavaScript",
-    "Python", "React", "Angular", "Node.js",
-    "Data Science", "Machine Learning"
-  ];
+  const [fields, setFields] = useState([]);
 
-  const courses = [
-    {
-      id: 1,
-      title: "Course1",
-      description: "Description",
-      fieldOfInterest: "JAVA",
-      period: "15/12/2024 - 14/03/2025",
-      availableSeats: 22,
-      languages: ["English", "French"],
-      lessons: 10,
-      price: 5.99
-    },
-    {
-      id: 2,
-      title: "Course2",
-      description: "Description",
-      fieldOfInterest: "JAVA Spring",
-      period: "15/12/2024 - 14/03/2025",
-      availableSeats: 22,
-      languages: ["English", "French"],
-      lessons: 10,
-      price: 5.99
-    },
-    {
-      id: 3,
-      title: "Course3",
-      description: "Description",
-      fieldOfInterest: "React",
-      period: "15/12/2024 - 14/03/2025",
-      availableSeats: 22,
-      languages: ["English", "Romanian"],
-      lessons: 10,
-      price: 5.99
-    }
-  ];
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/courses', {
+          withCredentials: true,
+        });
+        setCourses(response.data);
+
+        const uniqueFields = [...new Set(response.data.map(course => course.fieldOfInterest))];
+        setFields(uniqueFields);
+      } catch (error) {
+        console.error("Error while retrieving courses:", error);
+      }
+    };
+
+    fetchCourses();
+  }, []);
+
 
 
   function parseDate(dateStr) {
@@ -91,6 +72,30 @@ export default function StudentCourses() {
     const bIncludes = b.languages.includes(preferredLanguage);
     return (aIncludes === bIncludes) ? 0 : aIncludes ? -1 : 1;
   });
+
+  /*ENROLL*/
+
+  const [loadingCourseId, setLoadingCourseId] = useState(null);
+  const [errorEnroll] = useState(null);
+  const [successEnroll] = useState(null);
+
+  const handleEnroll = async (courseId) => {
+    if (!courseId) {
+      console.error("Course ID is undefined!");
+      return;
+    }
+
+    try {
+      await axios.post(`http://localhost:5000/api/enrollments/${courseId}`, {}, {
+        withCredentials: true
+      });
+
+      alert("Enrolled successfully!");
+    } catch (error) {
+      console.error("Error enrolling in course:", error);
+      alert("Enrollment failed.");
+    }
+  };
 
   return (
       <div className="courses-container">
@@ -217,9 +222,10 @@ export default function StudentCourses() {
                     <div>
                       <button
                           className="course-button"
-                          onClick={() => navigate(`/course/enroll/${course.id}`)}
+                          onClick={() => handleEnroll(course.id || course._id)}
+                          disabled={loadingCourseId === course.id}
                       >
-                        Enroll Course
+                        {loadingCourseId === course.id ? "Enrolling..." : "Enroll Course"}
                       </button>
                     </div>
                   </div>
@@ -227,6 +233,9 @@ export default function StudentCourses() {
               </div>
           ))}
         </div>
+
+        {errorEnroll && <div className="error-message">{errorEnroll}</div>}
+        {successEnroll && <div className="success-message">{successEnroll}</div>}
 
         <div className="chatbot-container">
           <button

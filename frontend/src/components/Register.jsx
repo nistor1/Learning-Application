@@ -4,13 +4,13 @@ import axios from 'axios';
 import './Login.css';
 import { useNavigate } from 'react-router-dom';
 
-const API_URL = 'http://localhost:80/user-service/auth/register';
+const API_URL = 'http://localhost:5000/api/auth/register';
 
 const Register = () => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [role, setRole] = useState('STUDENT');
+    const [admin, setAdmin] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const navigate = useNavigate();
@@ -25,7 +25,7 @@ const Register = () => {
                 name,
                 email,
                 password,
-                role
+                admin
             });
 
             if (response.status === 201) {
@@ -69,10 +69,10 @@ const Register = () => {
                         required
                         placeholder="Create a password"
                     />
-                    <label>Role</label>
+                    <label>Account Type</label>
                     <select
-                        value={role}
-                        onChange={(e) => setRole(e.target.value)}
+                        value={admin ? 'TEACHER' : 'STUDENT'}
+                        onChange={(e) => setAdmin(e.target.value === 'TEACHER')}
                         required
                     >
                         <option value="STUDENT">Student</option>
@@ -80,7 +80,7 @@ const Register = () => {
                     </select>
 
                     {error && <p className="error-message">{error}</p>}
-                    {success && <p style={{ color: 'green' }}>{success}</p>}
+                    {success && <p style={{color: 'green'}}>{success}</p>}
 
                     <button type="submit" className="login-button">Register</button>
                 </form>

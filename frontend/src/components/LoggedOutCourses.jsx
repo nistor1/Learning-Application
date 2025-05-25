@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, Edit2, Calendar, ChevronDown } from 'lucide-react';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
-import "./Courses.css"
+import "./Courses.css";
 
 export default function LoggedOutCourses() {
   const [startDate, setStartDate] = useState(new Date());
@@ -11,52 +12,30 @@ export default function LoggedOutCourses() {
   const [showFieldDropdown, setShowFieldDropdown] = useState(false);
   const [selectedField, setSelectedField] = useState("Field of Interest");
   const [searchTerm, setSearchTerm] = useState('');
+  const [courses, setCourses] = useState([]);
 
   const navigate = useNavigate();
 
-  const fields = [
-    "All Fields", "JAVA", "JAVA Spring", "JavaScript",
-    "Python", "React", "Angular", "Node.js",
-    "Data Science", "Machine Learning"
-  ];
+  const [fields, setFields] = useState([]);
 
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/courses', {
+          withCredentials: true,
+        });
+        setCourses(response.data);
 
+        const uniqueFields = [...new Set(response.data.map(course => course.fieldOfInterest))];
+        setFields(uniqueFields);
+      } catch (error) {
+        console.error("Error while retrieving courses:", error);
+      }
+    };
 
-  const courses = [
-    {
-      id: 1,
-      title: "Course1",
-      description: "Description",
-      fieldOfInterest: "JAVA",
-      period: "15/12/2024 - 14/03/2025",
-      availableSeats: 22,
-      languages: ["English", "French"],
-      lessons: 10,
-      price: 5.99
-    },
-    {
-      id: 2,
-      title: "Course2",
-      description: "Description",
-      fieldOfInterest: "JAVA Spring",
-      period: "15/12/2024 - 14/03/2025",
-      availableSeats: 22,
-      languages: ["English", "French"],
-      lessons: 10,
-      price: 5.99
-    },
-    {
-      id: 3,
-      title: "Course3",
-      description: "Description",
-      fieldOfInterest: "React",
-      period: "15/12/2024 - 14/03/2025",
-      availableSeats: 22,
-      languages: ["English", "Romanian"],
-      lessons: 10,
-      price: 5.99
-    }
-  ];
+    fetchCourses();
+  }, []);
+
 
   function parseDate(dateStr) {
     const [day, month, year] = dateStr.split('/');
@@ -67,10 +46,9 @@ export default function LoggedOutCourses() {
     const [startStr, endStr] = period.split(' - ');
     return {
       start: parseDate(startStr),
-      end: parseDate(endStr)
+      end: parseDate(endStr),
     };
   }
-
 
   const filteredCourses = courses.filter(course => {
     const matchesTitle = course.title.toLowerCase().includes(searchTerm.toLowerCase());
@@ -85,7 +63,6 @@ export default function LoggedOutCourses() {
     return matchesTitle && matchesField && matchesStartDate && matchesEndDate;
   });
 
-  /*Geolocation*/
   const preferredLanguage = localStorage.getItem("preferredLanguage") || "";
   const sortedCourses = [...filteredCourses].sort((a, b) => {
     const aIncludes = a.languages.includes(preferredLanguage);

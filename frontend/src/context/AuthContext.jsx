@@ -2,31 +2,34 @@ import React, { createContext, useContext, useState } from 'react';
 
 const AuthContext = createContext();
 
-export const AuthProvider = ({ children }) => {
+const defaultUser = { logged: false, email: '', role: undefined, id: '' };
 
+export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(() => {
         const savedUser = localStorage.getItem('user');
         return savedUser
             ? JSON.parse(savedUser)
-            : { logged: false, email: '', role: '', token: '', id: '' };
+            : defaultUser;
     });
 
-    const login = (email, role, token, id) => {
-        const loggedUser = { logged: true, email, role, token , id};
+    const login = (email, isAdmin, id) => {
+        let role;
+        if (isAdmin === true) role = "TEACHER";
+        else if (isAdmin === false) role = "STUDENT";
+        else role = undefined;
+
+        const loggedUser = { logged: true, email, role, id };
         setUser(loggedUser);
+        localStorage.setItem('role', role);
         localStorage.setItem('user', JSON.stringify(loggedUser));
-        localStorage.setItem('token', token);
         localStorage.setItem('id', id);
     };
 
     const logout = () => {
-        const defaultUser = { logged: false, email: '', role: '', token: '' , id: ''};
         setUser(defaultUser);
+        localStorage.removeItem('role');
         localStorage.removeItem('user');
-        localStorage.removeItem('token');
         localStorage.removeItem('id');
-
-        setUser(null);
     };
 
     return (
