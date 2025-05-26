@@ -7,8 +7,8 @@ import "react-datepicker/dist/react-datepicker.css";
 import './Courses.css';
 
 export default function StudentCourses() {
-  const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(new Date());
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
   const [showFieldDropdown, setShowFieldDropdown] = useState(false);
   const [selectedField, setSelectedField] = useState("Field of Interest");
   const [searchTerm, setSearchTerm] = useState('');
@@ -59,8 +59,9 @@ export default function StudentCourses() {
 
     const { start, end } = extractStartEnd(course.period);
 
-    const matchesStartDate = start >= startDate;
-    const matchesEndDate = end <= endDate;
+    const matchesStartDate = !startDate || start >= startDate;
+    const matchesEndDate = !endDate || end <= endDate;
+
 
     return matchesTitle && matchesField && matchesStartDate && matchesEndDate;
   });
@@ -121,10 +122,12 @@ export default function StudentCourses() {
                       selected={startDate}
                       onChange={(date) => setStartDate(date)}
                       dateFormat="dd MMM, yyyy"
+                      isClearable
+                      placeholderText="Start Date"
                       customInput={
                         <input
                             className="date-button"
-                            value={startDate.toLocaleDateString()}
+                            value={startDate ? startDate.toLocaleDateString() : ''}
                             readOnly
                         />
                       }
@@ -138,10 +141,12 @@ export default function StudentCourses() {
                       selected={endDate}
                       onChange={(date) => setEndDate(date)}
                       dateFormat="dd MMM, yyyy"
+                      isClearable
+                      placeholderText="End Date"
                       customInput={
                         <input
                             className="date-button"
-                            value={endDate.toLocaleDateString()}
+                            value={endDate ? endDate.toLocaleDateString() : ''}
                             readOnly
                         />
                       }

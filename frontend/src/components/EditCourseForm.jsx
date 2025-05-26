@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import './Courses.css';
+import { useAuth } from "../context/AuthContext.jsx";
 
 export default function EditCoursePage() {
     const navigate = useNavigate();
@@ -21,42 +22,53 @@ export default function EditCoursePage() {
         availableSeats: '',
         selectedLanguages: [],
     });
+    const { user } = useAuth();
 
     useEffect(() => {
         setFields(["JAVA", "JAVA Spring", "JavaScript", "Python", "React", "Angular"]);
         setLanguages(["English", "French", "German", "Spanish"]);
 
-        // Mock course data
-        const mockCourses = [
-            {
-                id: 3,
-                title: "Course3",
-                description: "Description",
-                fieldOfInterest: "React",
-                startDate: "2024-12-15",
-                endDate: "2025-03-14",
-                availableSeats: 22,
-                languages: ["English", "French"],
-                lessons: 10,
-                price: 5.99
-            }
-        ];
+        const fetchCourse = async () => {
+            try {
+                const response = await fetch(`http://localhost:5000/api/courses/${id}`, {
+                    method: 'GET',
+                    credentials: 'include',
+                });
 
-        const course = mockCourses.find(c => c.id.toString() === id);
-        if (course) {
-            setFormData({
-                title: course.title,
-                description: course.description,
-                fieldOfInterest: course.fieldOfInterest,
-                lessons: course.lessons,
-                price: course.price,
-                availableSeats: course.availableSeats,
-                selectedLanguages: course.languages
-            });
-            setStartDate(new Date(course.startDate));
-            setEndDate(new Date(course.endDate));
-        }
+                if (!response.ok) {
+                    throw new Error("Failed to fetch course");
+                }
+
+                const course = await response.json();
+
+                setFormData({
+                    title: course.title,
+                    description: course.description,
+                    fieldOfInterest: course.fieldOfInterest,
+                    lessons: course.lessons,
+                    price: course.price,
+                    availableSeats: course.availableSeats,
+                    selectedLanguages: course.languages,
+                });
+
+                const [startStr, endStr] = course.period.split(' - ');
+                const parseDate = (str) => {
+                    const [day, month, year] = str.split('/').map(Number);
+                    return new Date(year, month - 1, day);
+                };
+
+                setStartDate(parseDate(startStr));
+                setEndDate(parseDate(endStr));
+
+            } catch (err) {
+                console.error(err);
+                alert("Couldn't load course data.");
+            }
+        };
+
+        fetchCourse();
     }, [id]);
+
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -68,15 +80,51 @@ export default function EditCoursePage() {
         setFormData(prev => ({ ...prev, selectedLanguages: selected }));
     };
 
-    const handleSubmit = (e) => {
+    const formatDate = (date) => {
+        const d = new Date(date);
+        const day = String(d.getDate()).padStart(2, '0');
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const year = d.getFullYear();
+        return `${day}/${month}/${year}`;
+    };
+
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        const courseData = {
-            ...formData,
-            startDate,
-            endDate,
+
+        const period = `${formatDate(startDate)} - ${formatDate(endDate)}`;
+
+        const updatedCourse = {
+            id: id,
+            title: formData.title,
+            description: formData.description,
+            fieldOfInterest: formData.fieldOfInterest,
+            period: period,
+            availableSeats: Number(formData.availableSeats),
+            languages: formData.selectedLanguages,
+            lessons: Number(formData.lessons),
+            price: Number(formData.price),
+            teacher: user.teacher,
         };
-        console.log('Updated course data:', courseData);
-        // Replace with PUT API call
+
+        try {
+            const response = await fetch(`http://localhost:5000/api/courses`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify(updatedCourse)
+            });
+
+            if (!response.ok) throw new Error('Update failed');
+
+            alert('Course updated successfully!');
+            navigate(-1);
+        } catch (err) {
+            console.error(err);
+            alert('Failed to update course');
+        }
     };
 
     return (

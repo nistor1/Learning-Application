@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { Search, Edit2, Calendar, ChevronDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
@@ -6,55 +7,34 @@ import "react-datepicker/dist/react-datepicker.css";
 import './Courses.css';
 
 export default function TeacherCourses  () {
-    const [startDate, setStartDate] = useState(new Date());
-    const [endDate, setEndDate] = useState(new Date());
+    const [startDate, setStartDate] = useState(null);
+    const [endDate, setEndDate] = useState(null);
     const [showFieldDropdown, setShowFieldDropdown] = useState(false);
     const [selectedField, setSelectedField] = useState("Field of Interest");
     const [searchTerm, setSearchTerm] = useState('');
+    const [courses, setCourses] = useState([]);
 
     const navigate = useNavigate();
 
-    const fields = [
-        "All Fields", "JAVA", "JAVA Spring", "JavaScript",
-        "Python", "React", "Angular", "Node.js",
-        "Data Science", "Machine Learning"
-    ];
+    const [fields, setFields] = useState([]);
 
-    const courses = [
-        {
-            id: 1,
-            title: "Course1",
-            description: "Description",
-            fieldOfInterest: "JAVA",
-            period: "15/12/2024 - 14/03/2025",
-            availableSeats: 22,
-            languages: ["English", "French"],
-            lessons: 10,
-            price: 5.99
-        },
-        {
-            id: 2,
-            title: "Course2",
-            description: "Description",
-            fieldOfInterest: "JAVA Spring",
-            period: "15/12/2024 - 14/03/2025",
-            availableSeats: 22,
-            languages: ["English", "French"],
-            lessons: 10,
-            price: 5.99
-        },
-        {
-            id: 3,
-            title: "Course3",
-            description: "Description",
-            fieldOfInterest: "React",
-            period: "15/12/2024 - 14/03/2025",
-            availableSeats: 22,
-            languages: ["English", "Romanian"],
-            lessons: 10,
-            price: 5.99
+    const fetchCourses = async () => {
+        try {
+            const response = await axios.get('http://localhost:5000/api/courses', {
+                withCredentials: true,
+            });
+            setCourses(response.data);
+
+            const uniqueFields = [...new Set(response.data.map(course => course.fieldOfInterest))];
+            setFields(uniqueFields);
+        } catch (error) {
+            console.error("Error while retrieving courses:", error);
         }
-    ];
+    };
+
+    useEffect(() => {
+        fetchCourses();
+        }, []);
 
 
     function parseDate(dateStr) {
@@ -78,8 +58,8 @@ export default function TeacherCourses  () {
 
         const { start, end } = extractStartEnd(course.period);
 
-        const matchesStartDate = start >= startDate;
-        const matchesEndDate = end <= endDate;
+        const matchesStartDate = !startDate || start >= startDate;
+        const matchesEndDate = !endDate || end <= endDate;
 
         return matchesTitle && matchesField && matchesStartDate && matchesEndDate;
     });
@@ -91,6 +71,31 @@ export default function TeacherCourses  () {
         const bIncludes = b.languages.includes(preferredLanguage);
         return (aIncludes === bIncludes) ? 0 : aIncludes ? -1 : 1;
     });
+
+    /*DELETE*/
+
+    const [loadingCourseId, setLoadingCourseId] = useState(null);
+
+    const handleDelete = async (courseId) => {
+        if (!courseId) {
+            console.error("Course ID is undefined!");
+            return;
+        }
+
+        try {
+            await axios.delete(`http://localhost:5000/api/courses/${courseId}`,{
+                withCredentials: true
+            });
+
+            await fetchCourses();
+
+            alert("Course was successfully deleted!");
+        } catch (error) {
+            console.error("Error deleting a course:", error);
+            alert("Deleting failed.");
+        }
+    };
+
 
     return (
         <div className="courses-container">
@@ -116,10 +121,12 @@ export default function TeacherCourses  () {
                                     selected={startDate}
                                     onChange={(date) => setStartDate(date)}
                                     dateFormat="dd MMM, yyyy"
+                                    isClearable
+                                    placeholderText="Start Date"
                                     customInput={
                                         <input
                                             className="date-button"
-                                            value={startDate.toLocaleDateString()}
+                                            value={startDate ? startDate.toLocaleDateString() : ''}
                                             readOnly
                                         />
                                     }
@@ -133,10 +140,12 @@ export default function TeacherCourses  () {
                                     selected={endDate}
                                     onChange={(date) => setEndDate(date)}
                                     dateFormat="dd MMM, yyyy"
+                                    isClearable
+                                    placeholderText="End Date"
                                     customInput={
                                         <input
                                             className="date-button"
-                                            value={endDate.toLocaleDateString()}
+                                            value={endDate ? endDate.toLocaleDateString() : ''}
                                             readOnly
                                         />
                                     }
@@ -218,22 +227,23 @@ export default function TeacherCourses  () {
 
                                 <div className="course-actions">
                                     <button className="course-action-button"
-                                            onClick={() => navigate(`/teacher/courses/${course.id}/fields`)}>
+                                            onClick={() => navigate(`/teacher/courses/${course.id || course._id}/fields`)}>
                                         Edit
                                     </button>
                                     <button className="course-delete-button"
-                                            onClick={() => console.log('Delete', course.id)}>
+                                            onClick={() => handleDelete(course.id || course._id)}
+                                            disabled={loadingCourseId === course.id}      >
                                         Delete
                                     </button>
                                 </div>
 
                                 <div className="course-stats-actions">
                                     <button className="course-stats-button"
-                                            onClick={() => navigate(`/teacher/courses/${course.id}/stats`)}>
+                                            onClick={() => navigate(`/teacher/courses/${course.id || course._id}/stats`)}>
                                         Course Statistics
                                     </button>
                                     <button className="course-stats-button"
-                                            onClick={() => navigate(`/teacher/courses/${course.id}/enrollment`)}>
+                                            onClick={() => navigate(`/teacher/courses/${course.id || course._id}/enrollment`)}>
                                         Enroll Statistics
                                     </button>
                                 </div>

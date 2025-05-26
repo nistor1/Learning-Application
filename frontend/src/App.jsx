@@ -18,6 +18,7 @@ import EditCoursePage from "./components/EditCourseForm.jsx";
 import CourseStats from "./components/CourseStats.jsx";
 import LocationTracker from "./context/Location.jsx";
 import ChatbotPage from "./components/ChatbotPage.jsx";
+import ProfilePage from "./components/ProfilePage.jsx";
 
 const App = () => {
     return (
@@ -28,6 +29,7 @@ const App = () => {
                 <Routes>
                     <Route path="/login" element={<Login />} />
                     <Route path="/courses" element={<LoggedOutCourses />} />
+                    <Route path="/profile" element={<ProfilePage />} />
                     <Route path="/student/courses" element={<StudentCourses />} />
                     <Route path="/teacher/courses" element={<TeacherCourses />} />
                     <Route path="/contact" element={<Contact />} />

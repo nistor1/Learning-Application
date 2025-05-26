@@ -5,65 +5,63 @@ import {
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import './CourseStats.css';
+import { useParams } from 'react-router-dom';
 
 const CourseStatistics = () => {
-  const [startDate, setStartDate] = useState(new Date(2025, 0, 1));
-  const [endDate, setEndDate] = useState(new Date(2025, 11, 31));
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
   const [courseData, setCourseData] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  const mockEnrollmentData = [
-    { month: "January", year: 2025, enrollments: 21 },
-    { month: "February", year: 2025, enrollments: 48 },
-    { month: "March", year: 2025, enrollments: 40 },
-    { month: "April", year: 2025, enrollments: 15 },
-    { month: "May", year: 2025, enrollments: 96 },
-    { month: "June", year: 2025, enrollments: 27 },
-    { month: "July", year: 2025, enrollments: 99 },
-    { month: "August", year: 2025, enrollments: 44 },
-    { month: "September", year: 2025, enrollments: 23 },
-    { month: "October", year: 2025, enrollments: 9 },
-    { month: "November", year: 2025, enrollments: 11 },
-    { month: "December", year: 2025, enrollments: 33 }
-  ];
+  const { id } = useParams();
+
+  const formatDate = (date) => {
+    const d = new Date(date);
+    const month = `${d.getMonth() + 1}`.padStart(2, '0');
+    const day = `${d.getDate()}`.padStart(2, '0');
+    return `${d.getFullYear()}-${month}-${day}`;
+  };
 
   useEffect(() => {
     setIsLoading(true);
+    setError(null);
 
-    const months = [
-      "January", "February", "March", "April", "May", "June",
-      "July", "August", "September", "October", "November", "December"
-    ];
+    const fetchData = async () => {
+      try {
+        const start = formatDate(startDate);
+        const end = formatDate(endDate);
 
-    const startYear = startDate.getFullYear();
-    const endYear = endDate.getFullYear();
+        const url = `http://localhost:5000/api/enrollments/course/${id}/stats?startDate=${start}&endDate=${end}`;
 
-    const generatedData = [];
-
-    for (let year = startYear; year <= endYear; year++) {
-      const monthStart = year === startYear ? startDate.getMonth() : 0;
-      const monthEnd = year === endYear ? endDate.getMonth() : 11;
-
-      for (let m = monthStart; m <= monthEnd; m++) {
-        const monthName = months[m];
-        const existing = mockEnrollmentData.find(
-            (entry) => entry.month === monthName && entry.year === year
-        );
-
-        generatedData.push({
-          month: monthName,
-          year: year,
-          enrollments: existing ? existing.enrollments : 0,
-          label: `${monthName} ${year}`
+        const response = await fetch(url, {
+          method: 'GET',
+          credentials: 'include',
         });
+
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        const processedData = data.map(item => ({
+          ...item,
+          label: `${item.month} ${item.year}`
+        }));
+
+        setCourseData(processedData);
+      } catch (err) {
+        setError(err.message);
+        setCourseData([]);
+      } finally {
+        setIsLoading(false);
       }
+    };
 
-    }
+    fetchData();
 
-    setTimeout(() => {
-      setCourseData(generatedData);
-      setIsLoading(false);
-    }, 500);
   }, [startDate, endDate]);
 
   return (
@@ -76,7 +74,7 @@ const CourseStatistics = () => {
             <label>Start Month</label>
             <DatePicker
                 selected={startDate}
-                onChange={(date) => setStartDate(date)}
+                onChange={date => setStartDate(date)}
                 dateFormat="MMMM yyyy"
                 showMonthYearPicker
                 className="statistics-picker"
@@ -88,7 +86,7 @@ const CourseStatistics = () => {
             <label>End Month</label>
             <DatePicker
                 selected={endDate}
-                onChange={(date) => setEndDate(date)}
+                onChange={date => setEndDate(date)}
                 dateFormat="MMMM yyyy"
                 showMonthYearPicker
                 className="statistics-picker"
@@ -100,11 +98,15 @@ const CourseStatistics = () => {
         <div className="statistics-chart-container">
           <h2 className="statistics-chart-title">Students Enrolled</h2>
 
-          {isLoading ? (
-              <div className="statistics-loading">
-                Loading data...
-              </div>
-          ) : (
+          {isLoading && <div className="statistics-loading">Loading data...</div>}
+
+          {error && <div className="statistics-error">Error: {error}</div>}
+
+          {!isLoading && !error && courseData.length === 0 && (
+              <div className="statistics-no-data">No enrollment data available for the selected period.</div>
+          )}
+
+          {!isLoading && !error && courseData.length > 0 && (
               <div style={{ height: '24rem' }}>
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
@@ -131,9 +133,7 @@ const CourseStatistics = () => {
               </div>
           )}
 
-          <div className="statistics-footer">
-            Made with Recharts
-          </div>
+          <div className="statistics-footer">Made with Recharts</div>
         </div>
       </div>
   );

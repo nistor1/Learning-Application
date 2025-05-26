@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import './Courses.css';
+import axios from 'axios';
+import { useAuth } from "../context/AuthContext.jsx";
 
 export default function AddCoursePage() {
     const navigate = useNavigate();
@@ -19,6 +21,7 @@ export default function AddCoursePage() {
         availableSeats: '',
         selectedLanguages: [],
     });
+    const { user } = useAuth();
 
     useEffect(() => {
         // Replace with real API calls
@@ -36,15 +39,47 @@ export default function AddCoursePage() {
         setFormData(prev => ({ ...prev, selectedLanguages: selected }));
     };
 
-    const handleSubmit = (e) => {
+    const formatDate = (date) => {
+        const d = new Date(date);
+        const day = String(d.getDate()).padStart(2, '0');
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const year = d.getFullYear();
+        return `${day}/${month}/${year}`;
+    };
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
+
+        const period = `${formatDate(startDate)} - ${formatDate(endDate)}`;
+
         const courseData = {
-            ...formData,
-            startDate,
-            endDate,
+            title: formData.title,
+            description: formData.description,
+            fieldOfInterest: formData.fieldOfInterest,
+            period: period,
+            availableSeats: Number(formData.availableSeats),
+            languages: formData.selectedLanguages,
+            lessons: Number(formData.lessons),
+            price: Number(formData.price),
+            teacher: user.teacher,
         };
-        console.log('Submitting course:', courseData);
-        // Make API call here
+
+        try {
+            console.log('Course data to send:', courseData);
+
+            const response = await axios.post('http://localhost:5000/api/courses', courseData, {
+                withCredentials: true,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            alert('Course added successfully!');
+            navigate(-1);
+        } catch (error) {
+            console.error('Error adding course:', error);
+            alert('Failed to add course. Please try again.');
+        }
     };
 
     return (

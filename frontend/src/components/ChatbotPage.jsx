@@ -11,13 +11,14 @@ export default function ChatbotPage() {
 
         const userMessage = { role: 'user', content: input };
         setMessages((prev) => [...prev, userMessage]);
-        setInput(''); // Clear input immediately
+        setInput('');
         setLoading(true);
 
         try {
-            const res = await fetch('/api/chat', {
+            const res = await fetch('http://localhost:5000/api/chatbot/ask', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
                 body: JSON.stringify({ message: input }),
             });
 
