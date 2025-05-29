@@ -509,3 +509,9 @@
 .course-delete-button:hover {
     background-color: #7a1414;
 }
+
+.disabled-button {
+    background-color: #ccc;
+    cursor: not-allowed;
+    color: #666;
+}

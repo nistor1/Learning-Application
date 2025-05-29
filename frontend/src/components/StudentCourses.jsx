@@ -13,26 +13,27 @@ export default function StudentCourses() {
   const [selectedField, setSelectedField] = useState("Field of Interest");
   const [searchTerm, setSearchTerm] = useState('');
   const [courses, setCourses] = useState([]);
+  const isCourseAvailable = (course) => course.availableSeats > 0;
 
   const navigate = useNavigate();
 
   const [fields, setFields] = useState([]);
 
+  const fetchCourses = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/api/courses', {
+        withCredentials: true,
+      });
+      setCourses(response.data);
+
+      const uniqueFields = [...new Set(response.data.map(course => course.fieldOfInterest))];
+      setFields(uniqueFields);
+    } catch (error) {
+      console.error("Error while retrieving courses:", error);
+    }
+  };
+
   useEffect(() => {
-    const fetchCourses = async () => {
-      try {
-        const response = await axios.get('http://localhost:5000/api/courses', {
-          withCredentials: true,
-        });
-        setCourses(response.data);
-
-        const uniqueFields = [...new Set(response.data.map(course => course.fieldOfInterest))];
-        setFields(uniqueFields);
-      } catch (error) {
-        console.error("Error while retrieving courses:", error);
-      }
-    };
-
     fetchCourses();
   }, []);
 
@@ -90,7 +91,7 @@ export default function StudentCourses() {
       await axios.post(`http://localhost:5000/api/enrollments/${courseId}`, {}, {
         withCredentials: true
       });
-
+      fetchCourses();
       alert("Enrolled successfully!");
     } catch (error) {
       console.error("Error enrolling in course:", error);
@@ -226,12 +227,14 @@ export default function StudentCourses() {
 
                     <div>
                       <button
-                          className="course-button"
+                          className={`course-button ${!isCourseAvailable(course) ? 'disabled-button' : ''}`}
                           onClick={() => handleEnroll(course.id || course._id)}
-                          disabled={loadingCourseId === course.id}
+                          disabled={!isCourseAvailable(course) || loadingCourseId === course.id}
+                          title={!isCourseAvailable(course) ? "No available seats" : ""}
                       >
-                        {loadingCourseId === course.id ? "Enrolling..." : "Enroll Course"}
+                        {loadingCourseId === course.id ? "Enrolling..." : isCourseAvailable(course) ? "Enroll Course" : "Unavailable"}
                       </button>
+
                     </div>
                   </div>
                 </div>

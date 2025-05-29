@@ -14,8 +14,8 @@ const enrollToCourse = async (req, res) => {
         const course = await Course.findById(courseId);
         if (!course) return res.status(404).json({ message: 'Course not found' });
 
-        if (course.availableSpots <= 0) {
-            return res.status(400).json({ message: 'No available spots in this course' });
+        if (course.availableSeats <= 0) {
+            return res.status(400).json({ message: 'No available seats in this course' });
         }
 
         const alreadyEnrolled = await Enrollment.findOne({ course: courseId, student: user.id });
@@ -30,7 +30,7 @@ const enrollToCourse = async (req, res) => {
         });
 
         await enrollment.save();
-        course.availableSpots -= 1;
+        course.availableSeats -= 1;
         await course.save();
 
         res.status(201).json({ message: 'Enrollment Success', enrollment });
